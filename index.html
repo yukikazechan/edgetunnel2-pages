@@ -4031,6 +4031,10 @@
                     <h1 id="pageTitle">加载中...</h1>
                 </div>
                 <div class="header-buttons">
+                    <button type="button" class="btn btn-primary" id="userManageBtn" onclick="openUserManagement()"
+                        style="display:none; background: linear-gradient(135deg, #8b5cf6 0, #7c3aed 100%); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);">
+                        👥 用户管理
+                    </button>
                     <button type="button" class="btn btn-mode-toggle" id="modeToggleBtn" onclick="toggleUserMode()">🐣
                         我是小白！我想简单点！</button>
                     <button type="button" class="btn btn-danger btn-reset"
@@ -10184,6 +10188,143 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             }
         })();
 
+    </script>
+    <!-- 用户管理模态框 -->
+    <div class="modal-overlay" id="userManagementModal">
+        <div class="modal" onclick="event.stopPropagation()" style="max-width: 800px;">
+            <button type="button" class="modal-close" onclick="closeUserManagement()">×</button>
+            <h2 class="modal-title">👥 用户管理</h2>
+
+            <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <input type="text" id="newUserUser" placeholder="用户名"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="text" id="newUserPass" placeholder="密码"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="text" id="newUserUUID" placeholder="UUID (留空自动生成)"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
+                <button class="btn btn-primary" onclick="addUser()">添加用户</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="text-align: left; background: rgba(0,0,0,0.05);">
+                            <th style="padding: 10px;">用户名</th>
+                            <th style="padding: 10px;">密码</th>
+                            <th style="padding: 10px;">UUID</th>
+                            <th style="padding: 10px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userListBody">
+                        <!-- 用户列表 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 用户管理功能
+        async function openUserManagement() {
+            document.getElementById('userManagementModal').classList.add('show');
+            loadUsers();
+        }
+
+        function closeUserManagement() {
+            document.getElementById('userManagementModal').classList.remove('show');
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/admin/api/users/list', { method: 'POST' });
+                if (res.ok) {
+                    const users = await res.json();
+                    renderUsers(users);
+                } else {
+                    showToast('获取用户列表失败', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('获取用户列表出错', 'error');
+            }
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('userListBody');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 10px;">${u.username}</td>
+                    <td style="padding: 10px;">${u.password || '******'}</td>
+                    <td style="padding: 10px;">${u.uuid}</td>
+                    <td style="padding: 10px;">
+                        <button class="btn btn-danger" onclick="deleteUser('${u.username}')" style="padding: 4px 8px; font-size: 12px;">删除</button>
+                        <a href="/${u.uuid}/admin" target="_blank" class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; text-decoration: none;">管理</a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function addUser() {
+            const username = document.getElementById('newUserUser').value;
+            const password = document.getElementById('newUserPass').value;
+            const uuid = document.getElementById('newUserUUID').value;
+
+            if (!username || !password) {
+                showToast('用户名和密码不能为空', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/admin/api/users/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, uuid })
+                });
+                if (res.ok) {
+                    showToast('添加用户成功', 'success');
+                    document.getElementById('newUserUser').value = '';
+                    document.getElementById('newUserPass').value = '';
+                    document.getElementById('newUserUUID').value = '';
+                    loadUsers();
+                } else {
+                    const err = await res.json();
+                    showToast('添加失败: ' + (err.error || '未知错误'), 'error');
+                }
+            } catch (e) {
+                showToast('添加出错', 'error');
+            }
+        }
+
+        async function deleteUser(username) {
+            if (!confirm('确定删除用户 ' + username + ' 吗?')) return;
+            try {
+                const res = await fetch('/admin/api/users/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                if (res.ok) {
+                    showToast('删除成功', 'success');
+                    loadUsers();
+                } else {
+                    showToast('删除失败', 'error');
+                }
+            } catch (e) {
+                showToast('删除出错', 'error');
+            }
+        }
+
+        // 初始化检查：如果是管理员，显示按钮
+        document.addEventListener('DOMContentLoaded', () => {
+            // 简单的路径检查，如果是 /admin 则认为是管理员
+            if (window.location.pathname === '/admin' || window.location.pathname === '/admin/') {
+                const btn = document.getElementById('userManageBtn');
+                if (btn) btn.style.display = 'inline-block';
+            }
+        });
     </script>
 </body>
 
