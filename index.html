@@ -5486,12 +5486,20 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             // 订阅链接
             const token = currentConfig.优选订阅生成?.TOKEN;
             const host = window.location.host;
-            const link = currentConfig.LINK;
+            let pathPrefix = '';
+
+            // 尝试从路径中提取 UUID (格式: /UUID/admin)
+            // 匹配标准 UUID 格式: 8-4-4-4-12
+            const uuidMatch = window.location.pathname.match(/^\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\//);
+            if (uuidMatch) {
+                pathPrefix = '/' + uuidMatch[1];
+            }
+
             document.getElementById('LinkURL').value = currentConfig.LINK;
-            document.getElementById('subLink').value = `https://${host}/sub?token=${token}`;
-            document.getElementById('base64Link').value = `https://${host}/sub?token=${token}&b64`;
-            document.getElementById('clashLink').value = `https://${host}/sub?token=${token}&clash`;
-            document.getElementById('singboxLink').value = `https://${host}/sub?token=${token}&sb`;
+            document.getElementById('subLink').value = `https://${host}${pathPrefix}/sub?token=${token}`;
+            document.getElementById('base64Link').value = `https://${host}${pathPrefix}/sub?token=${token}&b64`;
+            document.getElementById('clashLink').value = `https://${host}${pathPrefix}/sub?token=${token}&clash`;
+            document.getElementById('singboxLink').value = `https://${host}${pathPrefix}/sub?token=${token}&sb`;
 
             // 编辑订阅生成
             const local = currentConfig.优选订阅生成?.local ?? true;
