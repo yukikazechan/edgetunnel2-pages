@@ -8408,9 +8408,32 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
         // 开始优选
         async function startOptimize() {
             console.log('[在线优选] 开始: 优选流程');
+
+            // 初始化停止标志
+            window.stopOptimizeFlag = false;
+
             const btnStart = document.getElementById('btnStartOptimize');
             btnStart.disabled = true;
             btnStart.textContent = '优选中...';
+
+            // 创建停止按钮
+            let btnStop = document.getElementById('btnStopOptimize');
+            if (!btnStop) {
+                btnStop = document.createElement('button');
+                btnStop.id = 'btnStopOptimize';
+                btnStop.textContent = '⏹ 停止并保存';
+                btnStop.className = 'btn btn-danger';
+                btnStop.style.cssText = 'margin-left:10px;background:#ef4444;color:white;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-weight:600;';
+                btnStop.onclick = function () {
+                    window.stopOptimizeFlag = true;
+                    this.disabled = true;
+                    this.textContent = '正在停止...';
+                };
+                btnStart.parentNode.insertBefore(btnStop, btnStart.nextSibling);
+            }
+            btnStop.style.display = 'inline-block';
+            btnStop.disabled = false;
+            btnStop.textContent = '⏹ 停止并保存';
 
             const progressBar = document.getElementById('optimizeProgressBar');
             const progressFill = document.getElementById('optimizeProgressFill');
@@ -8475,6 +8498,9 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             } finally {
                 btnStart.disabled = false;
                 btnStart.textContent = '开始优选';
+                // 隐藏停止按钮
+                const btnStop = document.getElementById('btnStopOptimize');
+                if (btnStop) btnStop.style.display = 'none';
             }
         }
 
@@ -8743,6 +8769,12 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
 
             // 逐批次并发执行
             for (const batch of batches) {
+                // 检查停止标志
+                if (window.stopOptimizeFlag) {
+                    console.log(`[在线优选] 用户中断: 已测试 ${completedCount} 个 IP，成功=${successCount}，失败=${failCount}`);
+                    showToast(`已停止测试（已完成 ${completedCount}/${total}）`, 'info');
+                    break;
+                }
                 await Promise.all(batch.map(ip => testIPWrapper(ip)));
             }
 
