@@ -10270,11 +10270,15 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
         async function addUser() {
             const username = document.getElementById('newUserUser').value;
             const password = document.getElementById('newUserPass').value;
-            const uuid = document.getElementById('newUserUUID').value;
+            let uuid = document.getElementById('newUserUUID').value.trim();
 
             if (!username || !password) {
                 showToast('用户名和密码不能为空', 'error');
                 return;
+            }
+
+            if (!uuid) {
+                uuid = crypto.randomUUID();
             }
 
             try {
