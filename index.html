@@ -5442,7 +5442,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
         async function loadConfig() {
             try {
                 // 禁用 Rocket Loader 对该请求的影响
-                const response = await fetch('/admin/config.json?_t=' + Date.now(), {
+                const response = await fetch('config.json?_t=' + Date.now(), {
                     method: 'GET',
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -5674,7 +5674,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             if (textarea._refreshLineEditor) textarea._refreshLineEditor();
 
             try {
-                const response = await fetch('/admin/ADD.txt?_t=' + Date.now(), {
+                const response = await fetch('ADD.txt?_t=' + Date.now(), {
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         'Pragma': 'no-cache',
@@ -6355,7 +6355,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             if (mode === 'custom') {
                 const customIPs = document.getElementById('customIPs').value;
                 try {
-                    await fetch('/admin/ADD.txt', { method: 'POST', body: customIPs });
+                    await fetch('ADD.txt', { method: 'POST', body: customIPs });
                 } catch (error) {
                     showToast('保存自定义IP失败', 'error');
                     return;
@@ -6556,7 +6556,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
 
         async function saveConfigToServer(section) {
             try {
-                const response = await fetch('/admin/config.json', {
+                const response = await fetch('config.json', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -7041,7 +7041,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-                const response = await fetch(`/admin/check?${params}&_t=${Date.now()}`, {
+                const response = await fetch(`check?${params}&_t=${Date.now()}`, {
                     method: 'GET',
                     signal: controller.signal
                 });
@@ -7528,7 +7528,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
                 confirmBtn.textContent = '保存中...';
 
                 // 提交到后端
-                const response = await fetch('/admin/tg.json', {
+                const response = await fetch('tg.json', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -7685,7 +7685,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
                     queryParams.append('APIToken', apiToken);
                 }
 
-                const response = await fetch('/admin/getCloudflareUsage?' + queryParams.toString());
+                const response = await fetch('getCloudflareUsage?' + queryParams.toString());
 
                 if (!response.ok) {
                     throw new Error('请求失败 (HTTP ' + response.status + ')');
@@ -7756,7 +7756,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
                 };
 
                 // 提交到后端
-                const response = await fetch('/admin/cf.json', {
+                const response = await fetch('cf.json', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -7793,7 +7793,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
                 currentConfig.TG.启用 = document.getElementById('telegramEnabled').checked;
 
                 // 提交到服务器，但整个 currentConfig
-                const response = await fetch('/admin/config.json', {
+                const response = await fetch('config.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(currentConfig)
@@ -7823,7 +7823,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
 
         async function confirmClearTelegramConfig() {
             try {
-                const response = await fetch('/admin/tg.json', {
+                const response = await fetch('tg.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ init: true })
@@ -7858,7 +7858,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
 
         async function confirmClearCloudflareConfig() {
             try {
-                const response = await fetch('/admin/cf.json', {
+                const response = await fetch('cf.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ init: true })
@@ -8211,7 +8211,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             const encodedURL = encodeURIComponent(completeURL);
 
             // 构建请求URL
-            const requestURL = `/admin/getADDAPI?url=${encodedURL}`;
+            const requestURL = `getADDAPI?url=${encodedURL}`;
 
             try {
                 const btn = document.getElementById('btnVerifyAPI');
