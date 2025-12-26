@@ -8966,7 +8966,10 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             tabsContainer.innerHTML = '';
             contentContainer.innerHTML = '';
 
-            const countries = Object.keys(optimizeResults).sort();
+            // 优先使用全局变量，确保持久化
+            const resultsData = window.optimizeResults || optimizeResults || {};
+            const countries = Object.keys(resultsData).sort();
+
             console.log(`[在线优选] 结果: 可用国家/地区=${countries.join(', ')}`);
 
             if (countries.length === 0) {
@@ -8984,7 +8987,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
                     tab.classList.add('active');
                     currentSelectedCountry = country;
                 }
-                const actualCount = optimizeResults[country].length;
+                const actualCount = resultsData[country].length;
                 tab.textContent = `${country} (${actualCount})`;
                 tab.onclick = () => selectCountryTab(country);
                 tabsContainer.appendChild(tab);
@@ -10140,7 +10143,26 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             const observer = new MutationObserver(function (mutations) {
                 mutations.forEach(function (mutation) {
                     if (mutation.target.id === 'onlineOptimizeModal' && mutation.target.classList.contains('show')) {
-                        setTimeout(enhanceSaveTipUI, 100);
+                        setTimeout(() => {
+                            enhanceSaveTipUI();
+
+                            // 检查是否有缓存的结果且当前显示为空
+                            if (window.optimizeResults && Object.keys(window.optimizeResults).length > 0) {
+                                const tabsContainer = document.getElementById('optimizeResultsTabs');
+                                if (tabsContainer && tabsContainer.innerHTML.trim() === '') {
+                                    console.log('[在线优选] 自动恢复上次结果');
+                                    // 恢复显示
+                                    document.getElementById('optimizeResultsTabs').classList.remove('hidden-section');
+                                    document.getElementById('optimizeResultsContent').classList.remove('hidden-section');
+
+                                    if (typeof displayResults === 'function') {
+                                        displayResults();
+                                    } else if (window.displayResults) {
+                                        window.displayResults();
+                                    }
+                                }
+                            }
+                        }, 100);
                     }
                 });
             });
