@@ -8979,7 +8979,8 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             // 更新选项卡样式
             const tabs = document.querySelectorAll('.optimize-tab');
             tabs.forEach(tab => {
-                if (tab.textContent === country) {
+                // 使用 startsWith 因为标签文本是 "FR (1)" 而 country 是 "FR"
+                if (tab.textContent.startsWith(country + ' ') || tab.textContent === country) {
                     tab.classList.add('active');
                 } else {
                     tab.classList.remove('active');
