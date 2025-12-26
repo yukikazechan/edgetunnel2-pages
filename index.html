@@ -6862,7 +6862,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
         // 加载最近8条日志
         async function loadLogs() {
             try {
-                const response = await fetch('/admin/log.json?_t=' + Date.now(), {
+                const response = await fetch('log.json?_t=' + Date.now(), {
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         'Pragma': 'no-cache',
@@ -6921,7 +6921,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
         // 显示全部日志
         async function showAllLogs() {
             try {
-                const response = await fetch('/admin/log.json?_t=' + Date.now(), {
+                const response = await fetch('log.json?_t=' + Date.now(), {
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         'Pragma': 'no-cache',
@@ -9295,7 +9295,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             setStatus('status-cf', 'loading');
             try {
                 const timestamp = Date.now();
-                const response = await fetch(`https://cf.090227.xyz/ip.json?_t=${timestamp}`);
+                const response = await fetch(`api/ip?_t=${timestamp}`);
                 const data = await response.json();
 
                 const cfIp = data.ip || '未知';
@@ -10236,7 +10236,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
 
         async function loadUsers() {
             try {
-                const res = await fetch('/admin/api/users/list', { method: 'POST' });
+                const res = await fetch('api/users/list', { method: 'POST' });
                 if (res.ok) {
                     const users = await res.json();
                     renderUsers(users);
@@ -10282,7 +10282,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
             }
 
             try {
-                const res = await fetch('/admin/api/users/add', {
+                const res = await fetch('api/users/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password, uuid })
@@ -10305,7 +10305,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
         async function deleteUser(username) {
             if (!confirm('确定删除用户 ' + username + ' 吗?')) return;
             try {
-                const res = await fetch('/admin/api/users/delete', {
+                const res = await fetch('api/users/delete', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username })
