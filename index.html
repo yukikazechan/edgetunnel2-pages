@@ -9005,6 +9005,9 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
 
         // 选择国家选项卡
         function selectCountryTab(country) {
+            console.log(`[在线优选] 调试: selectCountryTab 被调用, country=${country}`);
+            console.log(`[在线优选] 调试: window.optimizeResults=`, window.optimizeResults);
+
             currentSelectedCountry = country;
             window.currentSelectedCountry = country;
 
