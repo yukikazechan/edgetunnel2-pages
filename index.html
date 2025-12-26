@@ -10259,7 +10259,7 @@ vless://7b102311-43fd-4e8f-977e-8090623c101d@edt-pages.github.io:443?security=tl
                     <td style="padding: 10px;">${u.password || '******'}</td>
                     <td style="padding: 10px;">${u.uuid}</td>
                     <td style="padding: 10px;">
-                        <button class="btn btn-danger" onclick="deleteUser('${u.username}')" style="padding: 4px 8px; font-size: 12px;">删除</button>
+                        <button class="btn btn-danger" onclick="event.stopPropagation(); deleteUser('${u.username}')" style="padding: 4px 8px; font-size: 12px;">删除</button>
                         <a href="/${u.uuid}/admin" target="_blank" class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; text-decoration: none;">管理</a>
                     </td>
                 `;
